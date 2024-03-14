@@ -66,6 +66,8 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 			self.d_inp += self.span_extractor2.get_output_dim()
 
 		wandb.run.summary["input_layer_dim"] = self.d_inp
+		print("Input layer dim: ", self.d_inp)
+
 
 		if not self.use_mlp:
 			lin_module_list = []
@@ -101,6 +103,7 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 			else:
 				raise ValueError(f"The num of MLP layers should be a positive integer. Your input is {self.mlp_layer}")
 			self.classifier = nn.Sequential(*classifier_module_list)
+			print("MLP Architecture: ", self.classifier)
 
 		# self.w = nn.Parameter(torch.empty([config.num_hidden_layers, config.num_hidden_layers]))
 		# nn.init.xavier_uniform(self.w)

@@ -23,17 +23,17 @@ python3 run_olmo_dp.py \
   --do_eval \
   --per_device_train_batch_size 32 \
   --per_device_eval_batch_size 32 \
-  --data_dir ontonotes/dp/ \
+  --data_dir dataset/ontonotes/dp/ \
   --task $TASK_NAME \
   --output_dir outputs/olmo/mlp/$TASK_NAME/ \
   --overwrite_output_dir \
   --cache_dir cache/ \
+  --save_strategy epoch \
+  --evaluation_strategy epoch \
   --num_train_epochs 3.0 \
   --learning_rate 1e-5 \
   --mlp_dim 512 \
-  --mlp_layers 4 \
+  --mlp_layers 2 \
   --use_mlp True \
-  --save_strategy epoch \
-  --evaluation_strategy epoch \
-  --randomized \
+  --branch step20000-tokens84B \
   --dev \

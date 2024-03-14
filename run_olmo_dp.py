@@ -67,6 +67,8 @@ probe_config.unary = IS_UNARY[data_args.task]
 probe_config.use_mlp = model_args.use_mlp
 probe_config.num_labels = len(label2id)
 probe_config.onehot = model_args.onehot
+probe_config.label2id = label2id
+probe_config.id2label = id2label
 if probe_config.onehot:
 	logger.info("Using onehot embeddings.")
 model = OlmoForDiagnosticProbing(olmo=olmo, olmo_config=olmo_config, probe_config=probe_config)
