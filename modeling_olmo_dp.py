@@ -2,14 +2,13 @@ from copy import deepcopy
 from typing import Optional
 
 import torch
+import wandb
 from allennlp_light.modules import scalar_mix
 from allennlp_light.modules.span_extractors import SelfAttentiveSpanExtractor
+from hf_olmo.modeling_olmo import OLMoForCausalLM
 from torch import nn
 from torch.nn import CrossEntropyLoss
-from hf_olmo.modeling_olmo import OLMoForCausalLM
 from transformers.file_utils import ModelOutput
-
-import wandb
 
 from util.probe_config import ProbeConfig
 
@@ -68,7 +67,6 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 		wandb.run.summary["input_layer_dim"] = self.d_inp
 		print("Input layer dim: ", self.d_inp)
 
-
 		if not self.use_mlp:
 			lin_module_list = []
 			if self.mlp_layers == 1:
@@ -105,10 +103,10 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 			self.classifier = nn.Sequential(*classifier_module_list)
 			print("MLP Architecture: ", self.classifier)
 
-		# self.w = nn.Parameter(torch.empty([config.num_hidden_layers, config.num_hidden_layers]))
-		# nn.init.xavier_uniform(self.w)
-		# self.num_of_heads = None
-		# self.use_dsp = False
+	# self.w = nn.Parameter(torch.empty([config.num_hidden_layers, config.num_hidden_layers]))
+	# nn.init.xavier_uniform(self.w)
+	# self.num_of_heads = None
+	# self.use_dsp = False
 
 	def forward(
 			self,
@@ -194,6 +192,6 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 	def get_masks(self):
 		return torch.stack(self.transformer.get_masks())
 
-	# def apply_dsp(self, num_of_heads):
-	# 	self.num_of_heads = num_of_heads
-	# 	self.use_dsp = True
+# def apply_dsp(self, num_of_heads):
+# 	self.num_of_heads = num_of_heads
+# 	self.use_dsp = True

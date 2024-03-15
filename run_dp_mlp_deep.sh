@@ -1,17 +1,16 @@
-##!/bin/bash -l
-#
-##SBATCH -n 4
-##SBATCH --cpus-per-task=4
-##SBATCH --time=48:00:00
-##SBATCH --mem-per-cpu=4096
-##SBATCH --gpus=1
-##SBATCH --gres=gpumem:10240m
-#
-#module load eth_proxy
-#module load gcc/9.3.0
-#module load cuda/11.7.0
-#conda activate PvP
-#wandb login
+#!/bin/bash -l
+
+#SBATCH -n 4
+#SBATCH --cpus-per-task=4
+#SBATCH --time=24:00:00
+#SBATCH --mem-per-cpu=4096
+#SBATCH --gpus=rtx_3090:1
+
+module load eth_proxy
+module load gcc/9.3.0
+module load cuda/12.1.1
+conda activate probe
+wandb login
 
 export TASK_NAME=ner
 export CUDA_LAUNCH_BLOCKING=1

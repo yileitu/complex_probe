@@ -276,7 +276,7 @@ def load_optimizer(model, training_args: TrainingArguments):
 				},
 			]
 
-		from transformers import AdamW
+		from torch.optim import AdamW
 		optimizer = AdamW(optimizer_grouped_parameters)
 	else:
 		optimizer = None

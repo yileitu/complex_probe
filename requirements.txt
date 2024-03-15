@@ -1,19 +1,4 @@
 python==3.9
-allennlp==0.8.4
-torch
-transformers
-datasets
-accelerate
-overrides
-wandb
-huggingface_hub
-ai2-olmo
-
-# wandb login
-# pip install -U "huggingface_hub[cli]"
-# huggingface-cli login
-
-python==3.9
 allennlp-light
 torch
 transformers
