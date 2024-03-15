@@ -122,6 +122,7 @@ def tokenize_function(example):
 	pad_spans = [[-1, -1]] * num_to_pad
 	pad_labels = [-1] * num_to_pad
 
+	# NOTE: span1s, span2s are custom parameter names of forward().
 	result['span1s'] = [convert_span(result, pre_tokenized_str, target['span1']) for target in example['targets']]
 	result['span1s'].extend(pad_spans)
 	result['labels'] = [label2id[target['label']] for target in example['targets']]
