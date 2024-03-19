@@ -1,18 +1,20 @@
 from copy import deepcopy
 from typing import List, Optional
+from dataclasses import dataclass
 
 import torch
 import wandb
 from allennlp_light.modules import scalar_mix
 from allennlp_light.modules.span_extractors import SelfAttentiveSpanExtractor
-from hf_olmo.modeling_olmo import OLMoForCausalLM
 from torch import nn
 from torch.nn import CrossEntropyLoss
 from transformers.file_utils import ModelOutput
 
+from OLMo.hf_olmo.modeling_olmo import OLMoForCausalLM
 from util.probe_config import ProbeConfig
 
 
+@dataclass
 class DiagnosticProbingOutputs(ModelOutput):
 	loss: Optional[torch.FloatTensor] = None
 	logits: torch.FloatTensor = None
@@ -20,14 +22,13 @@ class DiagnosticProbingOutputs(ModelOutput):
 
 class OlmoForDiagnosticProbing(OLMoForCausalLM):
 	def __init__(self, olmo, olmo_config, probe_config: ProbeConfig):
-		super().__init__(olmo_config)
-		self.transformer = olmo
+		super().__init__(config=olmo_config, model=olmo)
 
 		if probe_config.onehot is False:
-			for param in self.transformer.parameters():
+			for param in self.model.parameters():
 				param.requires_grad = False
 		else:
-			for param in self.transformer.parameters():
+			for param in self.model.parameters():
 				param.requires_grad = True
 			print("Onehot is True. All parameters are trainable.")
 
@@ -47,13 +48,14 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 
 		# Configs from OLMO
 		self.olmo_config = olmo_config
-		self.n_embd = olmo_config.embedding_size
+		self.n_embd = olmo_config.d_model
 		self.scalar_mix = scalar_mix.ScalarMix(olmo_config.n_layers)
 		self.vocab_size = olmo_config.vocab_size
 		# self.onehot_scalar_mix = scalar_mix.ScalarMix(1)
 
 		if self.onehot is False:
 			self.proj1 = nn.Conv1d(self.n_embd, self.mlp_dim, kernel_size=1)
+			print("Projection 1: ", self.proj1)
 		else:
 			self.proj1 = nn.Conv1d(self.vocab_size, self.mlp_dim, kernel_size=1)
 		self.span_extractor1 = SelfAttentiveSpanExtractor(self.mlp_dim)
@@ -120,23 +122,23 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 			labels: Optional[torch.LongTensor] = None,
 			use_cache: Optional[bool] = None,
 			output_attentions: Optional[bool] = None,
-			output_hidden_states: Optional[bool] = None,
+			output_hidden_states: Optional[bool] = True,
 			return_dict: Optional[bool] = None,
 			span1s=None,
 			span2s=None,
 			):
 		return_dict = return_dict if return_dict is not None else self.olmo_config.use_return_dict
 
-		print(f"Input batch_size from input_ids: {input_ids.size(0)}") if input_ids is not None else None
-		print(f"Input batch_size from span1s: {span1s.size(0)}") if span1s is not None else None
-		print(f"Input batch_size from span2s: {span2s.size(0)}") if span2s is not None else None
+		# print(f"Input batch_size from input_ids: {input_ids.size(0)}") if input_ids is not None else None
+		# print(f"Input batch_size from span1s: {span1s.size(0)}") if span1s is not None else None
+		# print(f"Input batch_size from span2s: {span2s.size(0)}") if span2s is not None else None
 
 		# if self.use_dsp:
 		# 	head_mask = STEFunction.apply(self.w.view(-1), self.num_of_heads).view_as(self.w)
 		# 	self.apply_masks(head_mask)
 
 		if self.onehot is False:
-			transformer_outputs = self.transformer(
+			base_model_outputs = self.model(
 				input_ids=input_ids,
 				inputs_embeds=inputs_embeds,
 				attention_mask=attention_mask,
@@ -149,10 +151,12 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 				return_dict=return_dict
 				)
 			if not self.use_mlp:
-				contextual_embeddings = transformer_outputs[0]
+				contextual_embeddings = base_model_outputs[0]
 			else:
-				all_hidden_states = transformer_outputs.hidden_states[1:]
+				all_hidden_states = base_model_outputs.hidden_states[1:]
 				contextual_embeddings = self.scalar_mix(all_hidden_states)
+			# print("Shape of all_hidden_states: ", len(all_hidden_states), [h.size() for h in all_hidden_states])
+			# print("Shape of contextual_embeddings: ", contextual_embeddings.size())
 		else:
 			contextual_embeddings = torch.nn.functional.one_hot(input_ids, num_classes=self.config.vocab_size).half()
 
@@ -167,7 +171,6 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 			span_emb = span1_emb
 
 		logits = self.classifier(span_emb)
-		print(f"Logits shape: {logits.shape}")  # 这里可以查看 logits 的形状
 		if labels is not None:
 			print(f"Labels batch_size: {labels.size(0)}")
 		loss_fct = CrossEntropyLoss()
@@ -186,14 +189,3 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 			loss=loss,
 			logits=accuracy,
 			)
-
-	def apply_masks(self, head_mask):
-		head_mask = self.get_head_mask(head_mask, self.config.num_hidden_layers)
-		self.transformer.apply_masks(head_mask)
-
-	def get_masks(self):
-		return torch.stack(self.transformer.get_masks())
-
-# def apply_dsp(self, num_of_heads):
-# 	self.num_of_heads = num_of_heads
-# 	self.use_dsp = True

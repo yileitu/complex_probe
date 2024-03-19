@@ -46,7 +46,6 @@ olmo_config.label2id = label2id
 olmo_config.id2label = id2label
 print("OLMO config: ", olmo_config)
 
-
 # Load tokenizer
 tokenizer_kwargs = {
 	"cache_dir": model_args.cache_dir,
@@ -74,7 +73,8 @@ if probe_config.onehot:
 model = OlmoForDiagnosticProbing(olmo=olmo, olmo_config=olmo_config, probe_config=probe_config)
 record_num_of_params(model, logger)
 print("Embedding size of Olmo: ", olmo.get_input_embeddings().weight.shape)
-print("Embedding size of MyModel: ", model.get_input_embeddings().weight.shape)
+print(f"Model embedding dimension: {olmo.get_input_embeddings().embedding_dim}")
+print("Output size of Olmo: ", olmo.get_output_embeddings().weight.shape)
 print(probe_config)
 
 # # Dataset
@@ -89,7 +89,7 @@ else:
 	column_names = raw_datasets["validation"].column_names
 
 
-# Determine max_length to pad
+# NOTE: To determine max_length, max_length_train, max_length_val, max_length_test
 def pre_tokenize_function(example):
 	"""
 	Determine MAX_LENGTH for model of different languages
@@ -119,6 +119,8 @@ def tokenize_function(example):
 
 	num_targets = len(example['targets'])
 	num_to_pad = MAX_TARGET[data_args.task] - num_targets
+	# NOTE: 与jiaoda代码有改动
+	# num_to_pad = max_length - num_targets
 	pad_spans = [[-1, -1]] * num_to_pad
 	pad_labels = [-1] * num_to_pad
 
@@ -128,8 +130,7 @@ def tokenize_function(example):
 	result['labels'] = [label2id[target['label']] for target in example['targets']]
 	result['labels'].extend(pad_labels)
 	if not probe_config.unary:
-		result['span2s'] = [convert_span(result, pre_tokenized_str, target['span2']) for target in
-		                    example['targets']]
+		result['span2s'] = [convert_span(result, pre_tokenized_str, target['span2']) for target in example['targets']]
 		result['span2s'].extend(pad_spans)
 	return result
 
