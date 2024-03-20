@@ -10,7 +10,7 @@ from torch import nn
 from torch.nn import CrossEntropyLoss
 from transformers.file_utils import ModelOutput
 
-from OLMo.hf_olmo.modeling_olmo import OLMoForCausalLM
+from hf_olmo.modeling_olmo import OLMoForCausalLM
 from util.probe_config import ProbeConfig
 
 
@@ -87,7 +87,7 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 		else:
 			input_layer_list = [
 				nn.Linear(self.d_inp, self.mlp_dim),
-				nn.Tanh(),
+				nn.ReLU(),
 				nn.LayerNorm(self.mlp_dim),
 				nn.Dropout(self.mlp_dropout),
 				]
@@ -98,7 +98,7 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 				classifier_module_list = deepcopy(input_layer_list)
 				for _ in range(self.mlp_layers - 1):
 					classifier_module_list.append(nn.Linear(self.mlp_dim, self.mlp_dim))
-					classifier_module_list.append(nn.Tanh())
+					classifier_module_list.append(nn.ReLU())
 					classifier_module_list.append(nn.LayerNorm(self.mlp_dim))
 					classifier_module_list.append(nn.Dropout(self.mlp_dropout))
 				classifier_module_list += deepcopy(output_layer_list)

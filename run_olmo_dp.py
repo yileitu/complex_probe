@@ -197,7 +197,7 @@ trainer = Trainer(
 	data_collator=default_data_collator,  # Data collator will default to DataCollatorWithPadding, so we change it.
 	optimizers=(optimizer, None),
 	compute_metrics=compute_metrics,
-	callbacks=[SaveEvalResultsCallback(), EarlyStoppingCallback(early_stopping_patience=10)],
+	callbacks=[SaveEvalResultsCallback(), EarlyStoppingCallback(early_stopping_patience=5)],
 	)
 
 # Training

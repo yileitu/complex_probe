@@ -151,7 +151,7 @@ class OlmoArguments:
 			},
 		)
 	mlp_dropout: Optional[float] = field(
-		default=0.2,
+		default=0.0,
 		metadata={"help": "Dropout in MLP model."},
 		)
 	mlp_dim: Optional[int] = field(
@@ -165,13 +165,6 @@ class OlmoArguments:
 	num_of_heads: Optional[int] = field(
 		default=96,
 		metadata={"help": "Number of heads left unpruned."},
-		)
-	randomized: bool = field(
-		default=False,
-		metadata={
-			"help": "If true, load the architecture of the model only, without pretrained weights. "
-			        "By default (randomized=False), load the whole pretrained model."
-			},
 		)
 	dev: bool = field(
 		default=False,

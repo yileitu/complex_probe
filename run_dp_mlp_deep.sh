@@ -29,10 +29,10 @@ python3 run_olmo_dp.py \
   --cache_dir cache/ \
   --save_strategy epoch \
   --evaluation_strategy epoch \
-  --num_train_epochs 3.0 \
+  --num_train_epochs 20.0 \
   --learning_rate 1e-5 \
   --mlp_dim 512 \
   --mlp_layers 4 \
   --use_mlp True \
-  --branch step20000-tokens84B \
+  --branch step117850-tokens494B \
   --dev \
