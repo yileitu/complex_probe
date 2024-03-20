@@ -32,7 +32,7 @@ python3 run_olmo_dp.py \
   --num_train_epochs 3.0 \
   --learning_rate 1e-5 \
   --mlp_dim 512 \
-  --mlp_layers 2 \
+  --mlp_layers 4 \
   --use_mlp True \
   --branch step20000-tokens84B \
   --dev \

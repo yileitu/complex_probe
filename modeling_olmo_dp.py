@@ -171,8 +171,6 @@ class OlmoForDiagnosticProbing(OLMoForCausalLM):
 			span_emb = span1_emb
 
 		logits = self.classifier(span_emb)
-		if labels is not None:
-			print(f"Labels batch_size: {labels.size(0)}")
 		loss_fct = CrossEntropyLoss()
 		loss = loss_fct(logits[span_mask], labels[span_mask])
 
