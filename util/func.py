@@ -2,18 +2,20 @@
 import logging
 import os
 import sys
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from logging import Logger
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import datasets
+import torch
 import transformers
 import wandb
 from datasets import DatasetDict, load_dataset
 from transformers import TrainingArguments
+from transformers.file_utils import ModelOutput
 
 from util.const import GPT2_EN_PATH, GPT2_ZH_PATH, PROJ_NAME
-from util.dp_arguments import DataTrainingArguments, Gpt2Arguments, OlmoArguments
+from util.dp_arguments import DataTrainingArguments, Gpt2Arguments, OlmoArguments, PythiaArguments
 
 
 def post_process_gpt2_args(gpt2_args: Gpt2Arguments) -> None:
@@ -71,7 +73,7 @@ def transform_dict(config_dict: Dict, expand: bool = True):
 	return ret
 
 
-def set_wandb(model_args: Union[Gpt2Arguments, OlmoArguments], data_args: DataTrainingArguments,
+def set_wandb(model_args: Union[Gpt2Arguments, OlmoArguments, PythiaArguments], data_args: DataTrainingArguments,
               training_args: TrainingArguments) -> Tuple[str, str]:
 	"""
 	Set the wandb project name and wandb env based on the model arguments.
@@ -81,16 +83,18 @@ def set_wandb(model_args: Union[Gpt2Arguments, OlmoArguments], data_args: DataTr
 	if isinstance(model_args, Gpt2Arguments):
 		model_name = 'GPT2'
 	elif isinstance(model_args, OlmoArguments):
-		model_name = 'OLMO'
+		model_name = f'OLMO-{model_args.branch}'
+	elif isinstance(model_args, PythiaArguments):
+		model_name = f'Pythia-{model_args.scale}-{model_args.revision}'
 	else:
 		raise NotImplementedError(f"Model type {type(model_args)} not supported so far.")
 
 	# Serial name for each experiment
 	serial = f"Epoch{int(training_args.num_train_epochs)}-LR{training_args.learning_rate}-"
-	if model_args.randomized:
-		serial += "Randomized-"
-	else:
-		serial += "Pretrained-"
+	# if model_args.randomized:
+	# 	serial += "Randomized-"
+	# else:
+	# 	serial += "Pretrained-"
 
 	if model_args.dev:
 		serial += "Dev"
@@ -211,7 +215,7 @@ def set_gpu_env(num_gpus: int = 1):
 	return device
 
 
-def load_raw_dataset(model_args: Union[Gpt2Arguments, OlmoArguments], data_args: DataTrainingArguments,
+def load_raw_dataset(model_args: Union[Gpt2Arguments, OlmoArguments, PythiaArguments], data_args: DataTrainingArguments,
                      training_args: TrainingArguments, logger: Logger) -> DatasetDict:
 	data_files = {}
 	logger.info("Loading data for {}".format(data_args.task))
@@ -302,3 +306,9 @@ def get_label_and_id_mapping(task: str) -> Tuple[Dict[str, int], Dict[int, str]]
 	label2id = {label: i for i, label in enumerate(LABEL_DICT[task])}
 	id2label = {i: label for label, i in label2id.items()}
 	return label2id, id2label
+
+
+@dataclass
+class DiagnosticProbingOutputs(ModelOutput):
+	loss: Optional[torch.FloatTensor] = None
+	logits: torch.FloatTensor = None

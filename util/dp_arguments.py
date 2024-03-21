@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
+
 @dataclass
 class Gpt2Arguments:
 	"""
@@ -119,7 +120,8 @@ class Gpt2Arguments:
 	branch: Optional[str] = field(
 		default=None,
 		metadata={
-			"help": "The specific model version (checkpoint) to use. Only apply to OLMo model."},
+			"help": "The specific model version (checkpoint) to use. Only apply to OLMo model."
+			},
 		)
 
 
@@ -131,7 +133,8 @@ class OlmoArguments:
 	branch: Optional[str] = field(
 		default=None,
 		metadata={
-			"help": "The specific model version (checkpoint) to use. Only apply to OLMo model."},
+			"help": "The specific model version (checkpoint) to use. Only apply to OLMo model."
+			},
 		)
 	model_path: Optional[str] = field(
 		default=None,
@@ -218,4 +221,68 @@ class DataTrainingArguments:
 	preprocessing_num_workers: Optional[int] = field(
 		default=None,
 		metadata={"help": "The number of processes to use for the preprocessing."},
+		)
+
+
+@dataclass
+class PythiaArguments:
+	"""
+	Pythia Arguments
+	"""
+	revision: Optional[str] = field(
+		default=None,
+		metadata={
+			"help": "The specific model version (checkpoint) to use. Only apply to Pythia model."
+			},
+		)
+	scale: Optional[str] = field(
+		default="160m",
+		metadata={
+			"help": "Pythia model scale"
+			},
+		)
+	model_path: Optional[str] = field(
+		default=None,
+		metadata={
+			"help": "HuggingFace Path to checkpoints."
+			        "Don't set if you want to train a model from scratch."
+			},
+		)
+	cache_dir: Optional[str] = field(
+		default='cache/',
+		metadata={"help": "Where do you want to store the pretrained models downloaded from huggingface.co"},
+		)
+	use_mlp: bool = field(
+		default=True,
+		metadata={
+			"help": "Use mlp if True, otherwise use linear regression."
+			},
+		)
+	mlp_dropout: Optional[float] = field(
+		default=0.0,
+		metadata={"help": "Dropout in MLP model."},
+		)
+	mlp_dim: Optional[int] = field(
+		default=512,
+		metadata={"help": "Dimension of hidden states of MLP model."},
+		)
+	mlp_layers: Optional[int] = field(
+		default=1,
+		metadata={"help": "The number of layers of MLP model."},
+		)
+	num_of_heads: Optional[int] = field(
+		default=96,
+		metadata={"help": "Number of heads left unpruned."},
+		)
+	dev: bool = field(
+		default=False,
+		metadata={
+			"help": "If true, use development dataset to do evaluation. Otherwise use test dataset."
+			},
+		)
+	onehot: bool = field(
+		default=False,
+		metadata={
+			"help": "If true, extract the embeddings from GPT2 and then pass them as input to the probe."
+			},
 		)
