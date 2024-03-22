@@ -39,6 +39,7 @@ pythia_config_kwargs = {
 	"revision"      : model_args.revision,
 	"use_auth_token": True,
 	"use_cache"     : True,
+	"torch_dtype"   : torch.bfloat16,
 	}
 pythia_config = AutoConfig.from_pretrained(model_args.model_path, **pythia_config_kwargs)
 label2id, id2label = get_label_and_id_mapping(task=data_args.task)
