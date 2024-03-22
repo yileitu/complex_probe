@@ -55,11 +55,11 @@ if my_args.model_name == 'pythia':
 		"revision"      : my_args.revision,
 		"use_auth_token": True,
 		"use_cache"     : True,
-		"torch_dtype"   : torch.bfloat16,
 		}
 	pythia_hf_path = f"EleutherAI/pythia-{my_args.scale}-deduped"
-	tokenizer = AutoTokenizer.from_pretrained(pythia_hf_path)
 	model = GPTNeoXForCausalLM.from_pretrained(pythia_hf_path, **pythia_config_kwargs)
+	tokenizer = AutoTokenizer.from_pretrained(pythia_hf_path)
+	tokenizer.pad_token = tokenizer.eos_token
 else:
 	raise ValueError(f"Unsupported model name: {my_args.model_name}")
 model.to(device)

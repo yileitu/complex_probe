@@ -54,7 +54,7 @@ def validate_sentence(sentence, original_ids):
 
 
 SENTENCE_LEN = 15
-SENTENCE_NUM = 1000000
+SENTENCE_NUM = 10000000
 corpus = generate_corpus(tokenizer=tokenizer, num_sentences=SENTENCE_NUM, sentence_length=SENTENCE_LEN)
 
 # 存储语料库到文本文件

@@ -51,7 +51,7 @@ class MyArguments:
 			},
 		)
 	sentence_num: Optional[int] = field(
-		default=15,
+		default=10,
 		metadata={
 			"help": "Number of sentences in the random corpus."
 			},
