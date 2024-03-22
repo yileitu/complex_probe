@@ -12,9 +12,7 @@ module load cuda/12.1.1
 conda activate probe
 wandb login
 
-python3 pythia_train_from_scratch.py \
-  --save_strategy epoch \
-  --evaluation_strategy epoch \
+python3 train_pythia_from_scratch_on_random_corpus.py \
   --sentence_len 15 \
   --sentence_num 100000 \
   --model_name pythia \

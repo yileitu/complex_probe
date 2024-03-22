@@ -244,8 +244,7 @@ class PythiaArguments:
 	model_path: Optional[str] = field(
 		default=None,
 		metadata={
-			"help": "HuggingFace Path to checkpoints."
-			        "Don't set if you want to train a model from scratch."
+			"help": "HuggingFace path or local path to checkpoints."
 			},
 		)
 	cache_dir: Optional[str] = field(

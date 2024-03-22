@@ -4,7 +4,6 @@ import os
 import sys
 from datetime import datetime
 
-import torch
 from datasets import load_dataset
 
 script_dir = os.path.dirname(__file__)  # 获取当前脚本文件的目录
@@ -41,6 +40,7 @@ training_args.logging_steps = 50
 training_args.run_name = serial
 training_args.save_total_limit = 1
 training_args.save_strategy = "no"
+training_args.evaluation_strategy = "no"
 wandb.log(transform_dict(asdict(my_args)))
 
 # Misc Setup
@@ -76,10 +76,7 @@ def tokenize_function(examples):
 tokenized_datasets = dataset.map(tokenize_function, batched=True)
 
 # Load labeled data
-data_collator = DataCollatorForLanguageModeling(
-	tokenizer=tokenizer,
-	mlm=False,
-	)
+data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 trainer = Trainer(
 	model=model,
@@ -88,11 +85,10 @@ trainer = Trainer(
 	train_dataset=tokenized_datasets["train"],
 	)
 
-train_result = trainer.train()
+trainer.train()
 current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 save_dir = f"len{my_args.sentence_len}_num{my_args.sentence_num}-{current_timestamp}"
 timestamped_dir = os.path.join(training_args.output_dir, save_dir)
 trainer.save_model(output_dir=timestamped_dir)
 tokenizer.save_pretrained(save_directory=timestamped_dir)
-metrics = train_result.metrics
-logger.info(f"*** Train Metrics *** \n{metrics}")
+logger.info(f"Saved model and tokenizer to {timestamped_dir}")

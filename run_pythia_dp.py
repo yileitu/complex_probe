@@ -29,7 +29,11 @@ logger = set_logger(training_args)
 device = set_gpu_env(num_gpus=data_args.n_gpu)
 
 # Post-process args
-model_args.model_path = f"EleutherAI/pythia-{model_args.scale}-deduped"
+if model_args.model_path is None:
+	model_args.model_path = f"EleutherAI/pythia-{model_args.scale}-deduped"
+	logger.info("Load model ckpt from HF:", model_args.model_path)
+else:
+	logger.info("Load model ckpt from local:", model_args.model_path)
 model_args.cache_dir = os.path.join(model_args.cache_dir, f"pythia-{model_args.scale}-deduped", model_args.revision)
 post_process_training_args(training_args=training_args, wandb_proj_name=wandb_proj_name, serial=serial)
 
@@ -62,7 +66,7 @@ print("Vocab size of Config before tokenization: ", pythia_config.vocab_size)
 print("Vocab size of Tokenizer before tokenization: ", len(tokenizer))
 
 # Load Pythia model
-pythia = GPTNeoXForCausalLM.from_pretrained(pretrained_model_name_or_path=model_args.model_path, **pythia_config_kwargs)
+pythia = GPTNeoXForCausalLM.from_pretrained(model_args.model_path, **pythia_config_kwargs)
 print(type(pythia))
 probe_config = ProbeConfig()
 probe_config.mlp_dropout = model_args.mlp_dropout
