@@ -32,10 +32,11 @@ python3 ../run_pythia_dp.py \
   --num_train_epochs 20.0 \
   --learning_rate 1e-5 \
   --mlp_dim 512 \
-  --mlp_layers 4 \
+  --mlp_layers 2 \
   --use_mlp True \
   --dev \
   --scale 160m \
   --revision main \
-  --model_path ../ckpt/pythia/step0/pythia-epoch-1/ \
+  --model_path ckpt/len15_num100000-20240322165428 \
+  --load_local_ckpt \
 

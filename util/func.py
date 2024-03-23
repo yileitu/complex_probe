@@ -133,6 +133,7 @@ def set_logger(training_args: TrainingArguments) -> Logger:
 		datefmt="%m/%d/%Y %H:%M:%S",
 		handlers=[logging.StreamHandler(sys.stdout)],
 		)
+	training_args.log_level = "info"
 	log_level = training_args.get_process_log_level()
 	logger.setLevel(log_level)
 	datasets.utils.logging.set_verbosity(log_level)

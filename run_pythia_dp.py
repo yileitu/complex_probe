@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 # import hf_olmo # Must be imported to load olmo model, ignore no reference error.
 import os
-import random
+import sys
+
+script_dir = os.path.dirname(__file__)  # 获取当前脚本文件的目录
+parent_dir = os.path.dirname(script_dir)  # 获取父目录
+sys.path.insert(0, parent_dir)  # 将父目录添加到sys.path
 
 import pandas as pd
 import torch
@@ -29,11 +33,11 @@ logger = set_logger(training_args)
 device = set_gpu_env(num_gpus=data_args.n_gpu)
 
 # Post-process args
-if model_args.model_path is None:
-	model_args.model_path = f"EleutherAI/pythia-{model_args.scale}-deduped"
-	logger.info("Load model ckpt from HF:", model_args.model_path)
+if model_args.load_local_ckpt:
+	logger.info(f"Will load model ckpt from HF: {model_args.model_path}")
 else:
-	logger.info("Load model ckpt from local:", model_args.model_path)
+	model_args.model_path = f"EleutherAI/pythia-{model_args.scale}-deduped"
+	logger.info(f"Will load model ckpt from HF: {model_args.model_path}")
 model_args.cache_dir = os.path.join(model_args.cache_dir, f"pythia-{model_args.scale}-deduped", model_args.revision)
 post_process_training_args(training_args=training_args, wandb_proj_name=wandb_proj_name, serial=serial)
 

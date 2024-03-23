@@ -285,3 +285,9 @@ class PythiaArguments:
 			"help": "If true, extract the embeddings from GPT2 and then pass them as input to the probe."
 			},
 		)
+	load_local_ckpt: bool = field(
+		default=False,
+		metadata={
+			"help": "If true, load the local checkpoint from model_path."
+			},
+		)

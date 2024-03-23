@@ -22,7 +22,7 @@ python3 train_pythia_from_scratch_on_random_corpus.py \
   --fp16 \
   --cache_dir ../cache/ \
   --data_dir generated_corpus_len15_num100000.txt \
-  --output_dir ckpt/ \
+  --output_dir ../ckpt/ \
   --per_device_train_batch_size 8 \
   --per_device_eval_batch_size 8 \
   --num_train_epochs 1 \
