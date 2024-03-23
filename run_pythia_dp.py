@@ -34,7 +34,7 @@ device = set_gpu_env(num_gpus=data_args.n_gpu)
 
 # Post-process args
 if model_args.load_local_ckpt:
-	logger.info(f"Will load model ckpt from HF: {model_args.model_path}")
+	logger.info(f"Will load model ckpt from local: {model_args.model_path}")
 else:
 	model_args.model_path = f"EleutherAI/pythia-{model_args.scale}-deduped"
 	logger.info(f"Will load model ckpt from HF: {model_args.model_path}")

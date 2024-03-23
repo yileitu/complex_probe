@@ -15,18 +15,18 @@ wandb login
 export TASK_NAME=ner
 export CUDA_LAUNCH_BLOCKING=1
 
-python3 ../run_pythia_dp.py \
+python3 run_pythia_dp.py \
   --seed 42 \
   --n_gpu 1 \
   --do_train \
   --do_eval \
   --per_device_train_batch_size 32 \
   --per_device_eval_batch_size 32 \
-  --data_dir ../dataset/ontonotes/dp/ \
+  --data_dir dataset/ontonotes/dp/ \
   --task $TASK_NAME \
-  --output_dir ../outputs/pythia/mlp/$TASK_NAME/ \
+  --output_dir outputs/pythia/mlp/$TASK_NAME/ \
   --overwrite_output_dir \
-  --cache_dir ../cache/ \
+  --cache_dir cache/ \
   --save_strategy epoch \
   --evaluation_strategy epoch \
   --num_train_epochs 20.0 \

@@ -85,7 +85,10 @@ def set_wandb(model_args: Union[Gpt2Arguments, OlmoArguments, PythiaArguments], 
 	elif isinstance(model_args, OlmoArguments):
 		model_name = f'OLMO-{model_args.branch}'
 	elif isinstance(model_args, PythiaArguments):
-		model_name = f'Pythia-{model_args.scale}-{model_args.revision}'
+		if model_args.load_local_ckpt:
+			model_name = model_args.model_path
+		else:
+			model_name = f'Pythia-{model_args.scale}-{model_args.revision}'
 	else:
 		raise NotImplementedError(f"Model type {type(model_args)} not supported so far.")
 
