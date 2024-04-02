@@ -14,7 +14,7 @@ wandb login
 
 python3 train_pythia_from_scratch_on_random_corpus.py \
   --sentence_len 15 \
-  --sentence_num 100000 \
+  --sentence_num 1000000 \
   --model_name pythia \
   --scale 160m \
   --revision step0 \
@@ -26,4 +26,4 @@ python3 train_pythia_from_scratch_on_random_corpus.py \
   --per_device_train_batch_size 8 \
   --per_device_eval_batch_size 8 \
   --num_train_epochs 1 \
-  --learning_rate 1e-5 \
+  --learning_rate 6e-4 \

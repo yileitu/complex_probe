@@ -15,29 +15,25 @@ wandb login
 export TASK_NAME=ner
 export CUDA_LAUNCH_BLOCKING=1
 
-python3 run_pythia_dp.py \
+python3 ../run_gpt2_dp.py \
   --seed 42 \
   --n_gpu 1 \
   --do_train \
   --do_eval \
+  --fp16 \
   --per_device_train_batch_size 32 \
   --per_device_eval_batch_size 32 \
-  --data_dir dataset/ontonotes/dp/ \
+  --data_dir ../dataset/ontonotes/dp/ \
   --task $TASK_NAME \
-  --output_dir outputs/pythia/mlp/$TASK_NAME/ \
+  --output_dir ../outputs/gpt2/mlp/$TASK_NAME/ \
   --overwrite_output_dir \
-  --cache_dir cache/ \
+  --cache_dir ../cache/ \
   --save_strategy epoch \
   --evaluation_strategy epoch \
-  --num_train_epochs 20.0 \
-  --learning_rate 1e-4 \
-  --mlp_dim 512 \
-  --mlp_layers 8 \
+  --num_train_epochs 100.0 \
+  --learning_rate 1e-5 \
   --use_mlp True \
+  --mlp_dim 512 \
+  --mlp_layers 4 \
   --dev \
-  --scale 160m \
-  --revision step2000 \
-
-#  --model_path ckpt/len15_num100000-20240324140252 \
-#  --load_local_ckpt \
-
+  --randomized \

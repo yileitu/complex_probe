@@ -53,7 +53,7 @@ def validate_sentence(sentence, original_ids):
 	return np.array_equal(original_ids, encoded_ids)
 
 
-SENTENCE_LEN = 15
+SENTENCE_LEN = 128
 SENTENCE_NUM = 10 ** 6
 corpus = generate_corpus(tokenizer=tokenizer, num_sentences=SENTENCE_NUM, sentence_length=SENTENCE_LEN)
 

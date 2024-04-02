@@ -37,3 +37,4 @@ for task in LABEL_DICT:
 MAX_LENGTH = {'pos': 350, 'const': 350, 'ner': 350, 'coref': 280, 'srl': 350}
 MAX_TARGET = {'pos': 275, 'const': 175, 'ner': 71, 'coref': 300, 'srl': 11}
 IS_UNARY = {'pos': True, 'const': True, 'ner': True, 'coref': False, 'srl': False}
+

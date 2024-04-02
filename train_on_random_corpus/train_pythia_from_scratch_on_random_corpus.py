@@ -70,7 +70,8 @@ dataset = load_dataset('text', data_files={'train': corpus_path})
 
 
 def tokenize_function(examples):
-	return tokenizer(examples["text"], padding="max_length", truncation=True, max_length=my_args.max_length)
+	# TODO: Len改成128/256,改成不用padding,
+	return tokenizer(examples["text"])
 
 
 tokenized_datasets = dataset.map(tokenize_function, batched=True)

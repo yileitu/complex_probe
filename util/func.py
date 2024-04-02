@@ -43,7 +43,7 @@ def post_process_training_args(training_args: TrainingArguments, wandb_proj_name
 	training_args.load_best_model_at_end = True
 	training_args.metric_for_best_model = "eval_accuracy"
 	training_args.greater_is_better = True
-	training_args.save_total_limit = 1
+	training_args.save_total_limit = 0
 	training_args.output_dir = os.path.join(training_args.output_dir, wandb_proj_name, serial)  # Modify output dir
 
 
@@ -86,7 +86,7 @@ def set_wandb(model_args: Union[Gpt2Arguments, OlmoArguments, PythiaArguments], 
 		model_name = f'OLMO-{model_args.branch}'
 	elif isinstance(model_args, PythiaArguments):
 		if model_args.load_local_ckpt:
-			model_name = model_args.model_path
+			model_name = model_args.model_path.split('/')[-1]
 		else:
 			model_name = f'Pythia-{model_args.scale}-{model_args.revision}'
 	else:
@@ -94,10 +94,12 @@ def set_wandb(model_args: Union[Gpt2Arguments, OlmoArguments, PythiaArguments], 
 
 	# Serial name for each experiment
 	serial = f"Epoch{int(training_args.num_train_epochs)}-LR{training_args.learning_rate}-"
-	# if model_args.randomized:
-	# 	serial += "Randomized-"
-	# else:
-	# 	serial += "Pretrained-"
+	if isinstance(model_args, Gpt2Arguments):
+		if model_args.randomized:
+			serial += "Randomized-"
+		else:
+			serial += "Pretrained-"
+
 
 	if model_args.dev:
 		serial += "Dev"
@@ -316,3 +318,48 @@ def get_label_and_id_mapping(task: str) -> Tuple[Dict[str, int], Dict[int, str]]
 class DiagnosticProbingOutputs(ModelOutput):
 	loss: Optional[torch.FloatTensor] = None
 	logits: torch.FloatTensor = None
+
+
+def bimodal_normal(x: torch.Tensor, mu: float, sigma: float) -> None:
+	"""
+	Inits the weights (in-place) with the bimodal normal distribution (symmetric).
+
+	:param x: input tensor
+	:param mu: mean of the normal distribution
+	:param sigma: standard deviation of the normal distribution
+	"""
+	x.normal_(mean=mu, std=sigma)
+
+
+# size = x.size()
+# mask = torch.randint(0, 2, size=size) * 2 - 1  # Randomly flip half the values to their opposite sign
+# x *= mask
+
+
+def rescale_norm(x: torch.Tensor, norm: float) -> torch.Tensor:
+	"""
+	Rescales the input tensor (in-place) to have the specified norm.
+
+	:param x: input tensor
+	:param norm: norm to rescale to
+	"""
+	return x / torch.norm(x) * norm
+
+
+class STEFunction(torch.autograd.Function):
+	@staticmethod
+	def forward(ctx, input, k):
+		threshold = input.sort(descending=True)[0][k]
+		return (input > threshold).float()
+
+	@staticmethod
+	def backward(ctx, grad_output):
+		return grad_output, None
+
+
+def hardmax(X):
+	M, _ = torch.max(X, dim=-1, keepdim=True)
+	A = (M == X).float()
+	A /= torch.sum(A, dim=-1, keepdim=True)
+
+	return A

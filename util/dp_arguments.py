@@ -8,7 +8,7 @@ class Gpt2Arguments:
 	"""
 	Arguments pertaining to which model/config/tokenizer we are going to fine-tune, or train from scratch.
 	"""
-	gpt2_name_or_path: Optional[str] = field(
+	gpt2_path: Optional[str] = field(
 		default=None,
 		metadata={
 			"help": "The model checkpoint for weights initialization."
@@ -21,40 +21,15 @@ class Gpt2Arguments:
 			"help": "Whether to use GPT2-Chinese model."
 			},
 		)
-	model_path: Optional[str] = field(
-		default=None,
-		metadata={
-			"help": "Path to trained model."
-			        "Don't set if you want to train a model from scratch."
-			},
+	config_path: Optional[str] = field(
+		default=None, metadata={"help": "Pretrained config name or path if not the same as gpt2_name_or_path"}
 		)
-	config_overrides: Optional[str] = field(
-		default=None,
-		metadata={
-			"help": "Override some existing default config settings when a model is trained from scratch. Example: "
-			        "n_embd=10,resid_pdrop=0.2,scale_attn_weights=false,summary_type=cls_index"
-			},
-		)
-	config_name: Optional[str] = field(
-		default=None, metadata={"help": "Pretrained config name or path if not the same as model_name"}
-		)
-	tokenizer_name: Optional[str] = field(
-		default=None, metadata={"help": "Pretrained tokenizer name or path if not the same as model_name"}
+	tokenizer_path: Optional[str] = field(
+		default=None, metadata={"help": "Pretrained tokenizer name or path if not the same as gpt2_name_or_path"}
 		)
 	cache_dir: Optional[str] = field(
 		default='cache/',
 		metadata={"help": "Where do you want to store the pretrained models downloaded from huggingface.co"},
-		)
-	use_fast_tokenizer: bool = field(
-		default=True,
-		metadata={"help": "Whether to use one of the fast tokenizer (backed by the tokenizers library) or not."},
-		)
-	use_auth_token: bool = field(
-		default=False,
-		metadata={
-			"help": "Will use the token generated when running `transformers-cli login` (necessary to use this script "
-			        "with private models)."
-			},
 		)
 	use_mlp: bool = field(
 		default=True,
@@ -74,18 +49,6 @@ class Gpt2Arguments:
 		default=1,
 		metadata={"help": "The number of layers of MLP model."},
 		)
-	num_of_heads: Optional[int] = field(
-		default=96,
-		metadata={"help": "Number of heads left unpruned."},
-		)
-	pruning_lr: Optional[float] = field(
-		default=0.1,
-		metadata={"help": "Learning rate for head importance variables."},
-		)
-	do_prune: Optional[bool] = field(
-		default=False,
-		metadata={"help": "Whether heads are pruned."},
-		)
 	randomized: bool = field(
 		default=False,
 		metadata={
@@ -97,12 +60,6 @@ class Gpt2Arguments:
 		default=False,
 		metadata={
 			"help": "If true, use development dataset to do evaluation. Otherwise use test dataset."
-			},
-		)
-	verbose: int = field(
-		default=0,
-		metadata={
-			"help": "How to group wandb experiments."
 			},
 		)
 	saturated: bool = field(
@@ -117,11 +74,13 @@ class Gpt2Arguments:
 			"help": "If true, extract the embeddings from GPT2 and then pass them as input to the probe."
 			},
 		)
-	branch: Optional[str] = field(
-		default=None,
-		metadata={
-			"help": "The specific model version (checkpoint) to use. Only apply to OLMo model."
-			},
+	init_mean: Optional[float] = field(
+		default=0.0,
+		metadata={"help": "Mean value of weight initialization of GPT2."},
+		)
+	init_std: Optional[float] = field(
+		default=0.02,
+		metadata={"help": "Standard deviation of weight initialization of GPT2."},
 		)
 
 
