@@ -3,7 +3,7 @@ GPT2_EN_PATH = "gpt2"
 GPT2_ZH_PATH = "uer/gpt2-chinese-cluecorpussmall"
 OLMO_1B_HF_PATH = "allenai/OLMo-1B"
 
-PROJ_NAME = "SP"
+PROJ_NAME = ""
 
 LABEL_DICT = {}
 LABEL2ID = {}

@@ -43,7 +43,7 @@ def post_process_training_args(training_args: TrainingArguments, wandb_proj_name
 	training_args.load_best_model_at_end = True
 	training_args.metric_for_best_model = "eval_accuracy"
 	training_args.greater_is_better = True
-	training_args.save_total_limit = 0
+	training_args.save_total_limit = 1
 	training_args.output_dir = os.path.join(training_args.output_dir, wandb_proj_name, serial)  # Modify output dir
 
 
@@ -108,9 +108,9 @@ def set_wandb(model_args: Union[Gpt2Arguments, OlmoArguments, PythiaArguments], 
 
 	# wandb project name
 	if model_args.use_mlp:
-		wandb_proj_name = f"{PROJ_NAME}-{data_args.task}-{model_name}-MLP-Dim{model_args.mlp_dim}-Layer{model_args.mlp_layers}"
+		wandb_proj_name = f"{data_args.task}-{model_name}-MLP-Dim{model_args.mlp_dim}-Layer{model_args.mlp_layers}"
 	else:
-		wandb_proj_name = f"{PROJ_NAME}-{data_args.task}-{model_name}-LR-Dim{model_args.mlp_dim}-Layer{model_args.mlp_layers}"
+		wandb_proj_name = f"{data_args.task}-{model_name}-LR-Dim{model_args.mlp_dim}-Layer{model_args.mlp_layers}"
 
 	if model_args.onehot:
 		wandb_proj_name += "-OneHot"
