@@ -43,8 +43,13 @@ if model_args.chinese:
 	model_args.gpt2_path = GPT2_ZH_PATH
 	model_args.config_path = GPT2_ZH_PATH
 	model_args.tokenizer_path = GPT2_ZH_PATH
+
 if model_args.randomized:
 	model_args.gpt2_path = None
+	model_args.config_path = "gpt2"
+	model_args.tokenizer_path = "gpt2"
+else:
+	model_args.gpt2_path = "gpt2"
 	model_args.config_path = "gpt2"
 	model_args.tokenizer_path = "gpt2"
 if model_args.chinese and model_args.randomized:

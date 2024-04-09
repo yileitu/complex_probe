@@ -1,10 +1,10 @@
 #!/bin/bash -l
 
-#SBATCH -n 4
-#SBATCH --cpus-per-task=4
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
 #SBATCH --time=24:00:00
-#SBATCH --mem-per-cpu=4096
-#SBATCH --gpus=rtx_3090:1
+#SBATCH --mem-per-cpu=16384
+#SBATCH --gpus=rtx_2080_ti:1
 
 module load eth_proxy
 module load gcc/9.3.0
@@ -25,15 +25,15 @@ python3 ../run_gpt2_dp.py \
   --per_device_eval_batch_size 32 \
   --data_dir ../dataset/ontonotes/dp/ \
   --task $TASK_NAME \
-  --output_dir ../outputs/gpt2/mlp/$TASK_NAME/ \
+  --output_dir ../outputs/gpt2/linear/$TASK_NAME/ \
   --overwrite_output_dir \
   --cache_dir ../cache/ \
   --save_strategy epoch \
   --evaluation_strategy epoch \
-  --num_train_epochs 100.0 \
+  --num_train_epochs 150.0 \
   --learning_rate 1e-5 \
-  --use_mlp True \
+  --use_mlp False \
   --mlp_dim 512 \
-  --mlp_layers 4 \
+  --mlp_layers 8 \
   --dev \
-  --randomized \
+#  --randomized \
